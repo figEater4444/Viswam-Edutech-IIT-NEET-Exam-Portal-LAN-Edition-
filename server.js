@@ -23,5 +23,5 @@ io.on('connection', (socket) => {
 // Replace '0.0.0.0' to allow any device on your Wi-Fi to connect
 const PORT = 3000;
 server.listen(PORT, '0.0.0.0', () => {
-    console.log(`Exam Portal running at http://YOUR_IP_HERE:${PORT}`);
+    console.log(`Exam Portal running at http:// 192.168.10.146:${PORT}`);
 });
