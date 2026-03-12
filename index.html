@@ -87,7 +87,27 @@
                 </table>
             </div>
         </div>
+<title>WiFi Exam Portal</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; text-align: center; }
+        #exam-area { display: none; }
+        .warning { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="login">
+        <h2>Enter Name to Start Exam</h2>
+        <input type="text" id="studentName" placeholder="Your Name">
+        <button onclick="startExam()">Start</button>
+    </div>
 
+    <div id="exam-area">
+        <h1>Final Examination</h1>
+        <p>Question 1: What is the capital of India?</p>
+        <textarea rows="4" cols="50"></textarea><br>
+        <p class="warning">Tab Switches: <span id="count">0</span></p>
+    </div>
         <div id="tabCreate" class="hidden">
             <div class="card">
                 <h3>Add New MCQ (OCR Enabled)</h3>
@@ -325,6 +345,32 @@
             document.querySelector('#resTable tbody').innerHTML = data.map(r => `
                 <tr><td>${r.studentName}</td><td>${r.subject}</td><td><b>${r.score}</b></td><td>${r.timestamp}</td></tr>
             `).join('');
+            const socket = io();
+        let name = "";
+        let switchCount = 0;
+
+        function startExam() {
+            name = document.getElementById('studentName').value;
+            if(!name) return alert("Enter name!");
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('exam-area').style.display = 'block';
+        }
+
+        // PROCTORING LOGIC
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden && name !== "") {
+                switchCount++;
+                document.getElementById('count').innerText = switchCount;
+                
+                // Alert the server
+                socket.emit('tab-switched', {
+                    name: name,
+                    count: switchCount
+                });
+
+                alert("Warning: Tab switching is recorded!");
+            }
+        });
         }
     </script>
 </body>
